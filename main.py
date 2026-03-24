@@ -1,30 +1,20 @@
 import sys
 import time
 
-VERSION = "0.1.0"
+from config import APP_NAME, VERSION, DESCRIPTION, TYPEWRITER_DELAY, BOX_WIDTH
 
 BANNER = r"""
-  ::::::::  :::    :::     :::     :::    ::: :::::::::      :::
- :+:    :+: :+:    :+:   :+: :+:  :+:   :+:  :+:    :+:   :+: :+:
- +:+        +:+    +:+  +:+   +:+ +:+  +:+   +:+    +:+  +:+   +:+
- +#+        +#++:++#++ +#++:++#++:+#++:++    +#++:++#:  +#++:++#++:
- +#+        +#+    +#+ +#+     +#++#+  +#+    +#+    +#+ +#+     +#+
- #+#    #+# #+#    #+# #+#     #+##+#   #+#   #+#    #+# #+#     #+#
-  ########  ###    ### ###     ######    ### ###    ### ###     ###
-
- :::     ::: ::::::::::: :::::::::: :::       :::
- :+:     :+:     :+:     :+:        :+:       :+:
- +:+     +:+     +:+     +:+        +:+       +:+
- +#+     +:+     +#+     +#++:++#   +#+  +:+  +#+
-  +#+   +#+      +#+     +#+        +#+ +#+#+ +#+
-   #+#+#+#       #+#     #+#         #+#+# #+#+#
-     ###     ########### ##########   ###   ###
+   ░█████╗░██╗░░██╗░█████╗░██╗░░██╗██████╗░░█████╗░██╗░░░██╗██╗███████╗░██╗░░░░░░░██╗
+   ██╔══██╗██║░░██║██╔══██╗██║░██╔╝██╔══██╗██╔══██╗██║░░░██║██║██╔════╝░██║░░██╗░░██║
+   ██║░░╚═╝███████║███████║█████═╝░██████╔╝███████║╚██╗░██╔╝██║█████╗░░░╚██╗████╗██╔╝
+   ██║░░██╗██╔══██║██╔══██║██╔═██╗░██╔══██╗██╔══██║░╚████╔╝░██║██╔══╝░░░░████╔═████║░
+   ╚█████╔╝██║░░██║██║░░██║██║░╚██╗██║░░██║██║░░██║░░╚██╔╝░░██║███████╗░░╚██╔╝░╚██╔╝░
+   ░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚══════╝░░░╚═╝░░░╚═╝░
 """
 
-SEPARATOR = "═" * 62
 
-
-def print_slow(text, delay=0.008):
+def print_slow(text, delay=TYPEWRITER_DELAY):
+    """Print text character by character for a typewriter effect."""
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
@@ -32,26 +22,41 @@ def print_slow(text, delay=0.008):
     print()
 
 
+def draw_box(lines):
+    """Draw a box around a list of text lines."""
+    print(f"  ╔{'═' * BOX_WIDTH}╗")
+    for line in lines:
+        padding = BOX_WIDTH - len(line) - 4
+        print_slow(f"  ║  {line}{' ' * padding}  ║")
+    print(f"  ╚{'═' * BOX_WIDTH}╝")
+
+
+def print_status(label, status="ready"):
+    """Print a status line with dots alignment."""
+    dots = "." * (44 - len(label))
+    print_slow(f"   [✓] {label} {dots} {status}")
+
+
 def startup():
+    """Display the ChakraView startup sequence."""
     print(BANNER)
-    W = 60
-    tag = f":: ChakraView ::  (v{VERSION})"
-    desc = "Vibe Audit -- Web Application Vulnerability Scanner"
-    pad1 = W - len(tag) - 4
-    pad2 = W - len(desc) - 4
-    print(f"  ╔{'═' * W}╗")
-    print_slow(f"  ║  {tag}{' ' * pad1}  ║")
-    print_slow(f"  ║  {desc}{' ' * pad2}  ║")
-    print(f"  ╚{'═' * W}╝")
+
+    draw_box([
+        f":: {APP_NAME} ::  (v{VERSION})",
+        DESCRIPTION,
+    ])
     print()
-    print_slow("   ● OWASP Top 10 detection engine ............. ready")
-    print_slow("   ● Custom rule engine ........................ ready")
-    print_slow("   ● Report generator .......................... ready")
+
+    print_status("OWASP Top 10 detection engine")
+    print_status("Custom rule engine")
+    print_status("Report generator")
     print()
-    print(f"  {SEPARATOR}")
-    print_slow(f"  ▸ Started ChakraView v{VERSION} on Python {sys.version.split()[0]}")
-    print_slow("  ▸ Awaiting target — No scan in progress.")
-    print(f"  {SEPARATOR}")
+
+    separator = f"  {'═' * (BOX_WIDTH + 2)}"
+    print(separator)
+    print_slow(f"  ▸ Started {APP_NAME} v{VERSION} on Python {sys.version.split()[0]}")
+    print_slow(f"  ▸ Awaiting target — No scan in progress.")
+    print(separator)
     print()
 
 
