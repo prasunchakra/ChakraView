@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logo.png" alt="ChakraView Logo" width="280" />
+  <img src="assets/logo.png" alt="ChakraView Logo" width="280" />
   <h1>ChakraView</h1>
   <p><strong>The ultimate Vibe Auditing Tool for modern web applications.</strong></p>
 
@@ -29,7 +29,7 @@ ChakraView is the ultimate CLI-based **Vibe Auditing Tool** built to help **vibe
 ## 🖥️ Preview
 
 <div align="center">
-  <img src="terminal.png" alt="ChakraView Terminal Output" width="700" />
+  <img src="assets/terminal.png" alt="ChakraView Terminal Output" width="700" />
 </div>
 
 ## 🏁 Getting Started

@@ -1,7 +1,27 @@
 import sys
 import time
 
-from config import APP_NAME, VERSION, DESCRIPTION, TYPEWRITER_DELAY, BOX_WIDTH
+from config import (
+    APP_NAME, VERSION, DESCRIPTION,
+    TYPEWRITER_DELAY, BOX_WIDTH,
+    TARGET_URL, MAX_CRAWL_DEPTH, MAX_PAGES,
+)
+from scanners import ALL_SCANNERS
+from scanners.discovery import DiscoveryScanner
+
+EYE = r"""
+                         ▄▄███████▄▄
+                      ▄██▀▀       ▀▀██▄
+                   ▄█▀   ▄▄█████▄▄   ▀█▄
+                 ▄█▀   ▄██▀▀   ▀▀██▄   ▀█▄
+                ██   ▄██▀  ▄█████▄  ▀██▄   ██
+               ██   ██▀  ██▀▀█▀▀██  ▀██   ██
+                ██   ▀██▄  ▀█████▀  ▄██▀   ██
+                 ▀█▄   ▀██▄▄   ▄▄██▀   ▄█▀
+                   ▀█▄   ▀▀█████▀▀   ▄█▀
+                      ▀██▄▄       ▄▄██▀
+                         ▀▀███████▀▀
+"""
 
 BANNER = r"""
    ░█████╗░██╗░░██╗░█████╗░██╗░░██╗██████╗░░█████╗░██╗░░░██╗██╗███████╗░██╗░░░░░░░██╗
@@ -14,7 +34,6 @@ BANNER = r"""
 
 
 def print_slow(text, delay=TYPEWRITER_DELAY):
-    """Print text character by character for a typewriter effect."""
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
@@ -23,7 +42,6 @@ def print_slow(text, delay=TYPEWRITER_DELAY):
 
 
 def draw_box(lines):
-    """Draw a box around a list of text lines."""
     print(f"  ╔{'═' * BOX_WIDTH}╗")
     for line in lines:
         padding = BOX_WIDTH - len(line) - 4
@@ -32,13 +50,18 @@ def draw_box(lines):
 
 
 def print_status(label, status="ready"):
-    """Print a status line with dots alignment."""
     dots = "." * (44 - len(label))
     print_slow(f"   [✓] {label} {dots} {status}")
 
 
+def print_scanner_load(scanner_cls):
+    s = scanner_cls()
+    dots = "." * (48 - len(s.name))
+    print_slow(f"   ▸ {s.name} {dots} loaded")
+
+
 def startup():
-    """Display the ChakraView startup sequence."""
+    print(EYE)
     print(BANNER)
 
     draw_box([
@@ -52,13 +75,40 @@ def startup():
     print_status("Report generator")
     print()
 
+    print_slow("   Loading scanner modules...")
+    print()
+    for scanner_cls in ALL_SCANNERS:
+        print_scanner_load(scanner_cls)
+    print()
+
     separator = f"  {'═' * (BOX_WIDTH + 2)}"
     print(separator)
-    print_slow(f"  ▸ Started {APP_NAME} v{VERSION} on Python {sys.version.split()[0]}")
-    print_slow(f"  ▸ Awaiting target — No scan in progress.")
+    scanner_count = len(ALL_SCANNERS)
+    print_slow(
+        f"  ▸ Started {APP_NAME} v{VERSION} on Python {sys.version.split()[0]}"
+        f"  ({scanner_count} scanner(s) armed)"
+    )
+    print_slow(f"  ▸ Target ➜  {TARGET_URL}")
     print(separator)
     print()
 
 
+def run_discovery() -> dict:
+    """Run the Discovery scanner using settings from config.py."""
+    separator = f"  {'═' * (BOX_WIDTH + 2)}"
+    print(separator)
+    print()
+
+    scanner = DiscoveryScanner(max_depth=MAX_CRAWL_DEPTH, max_pages=MAX_PAGES)
+    results = scanner.scan(TARGET_URL)
+
+    print(separator)
+    print_slow(f"  ▸ Discovery phase complete.")
+    print(separator)
+    print()
+    return results
+
+
 if __name__ == "__main__":
     startup()
+    run_discovery()
